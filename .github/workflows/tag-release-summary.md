@@ -15,6 +15,24 @@ network:
   allowed:
     - defaults
 
+# Integrity filtering decides which GitHub content the agent is allowed to
+# read. Public repositories default to min-integrity: approved, which filters
+# out anything authored by someone without a strong association to THIS repo.
+# On 2026-11-19 that silently blocked both commits of v1.0.2 and produced an
+# empty release report, so the team's own accounts are trusted explicitly.
+#
+# This does not weaken the protection against outside contributors: anyone
+# not listed here is still judged on their association with the repository.
+tools:
+  github:
+    min-integrity: approved
+    trusted-users:
+      - chainaimdev
+      - chainaim-lawinth
+      - chainaim-bala
+      - chainaim-nisha
+      - chainaim-haripriya
+
 safe-outputs:
   create-issue:
     title-prefix: "[release] "
