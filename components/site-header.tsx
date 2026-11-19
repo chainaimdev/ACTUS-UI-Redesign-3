@@ -32,7 +32,7 @@ export function SiteHeader() {
           <ActusLogo alt="" className="h-8 xl:h-9" />
         </Link>
 
-        <nav aria-label="Main" className="hidden lg:block">
+        <nav aria-label="Main" className="hidden min-[1160px]:block">
           <ul className="flex items-center gap-0.5">
             {mainNav.map((item) => (
               <li key={item.label}>
@@ -85,7 +85,7 @@ function ExploreMenu() {
 }
 
 const navLinkClass =
-  'inline-flex items-center gap-1 whitespace-nowrap rounded-lg px-3 py-2 text-sm max-xl:px-1.5 max-xl:text-[13px] font-medium text-ink-muted transition-colors hover:bg-surface hover:text-ink'
+  'inline-flex items-center gap-1 whitespace-nowrap rounded-lg px-2 2xl:px-3 py-2 text-sm max-xl:px-1.5 max-xl:text-[13px] font-medium text-ink-muted transition-colors hover:bg-surface hover:text-ink'
 
 function DesktopLink({ item }: { item: NavItem }) {
   return (
@@ -156,7 +156,7 @@ function MobileMenu() {
   return (
     <Sheet>
       <SheetTrigger
-        className="inline-flex size-10 items-center justify-center rounded-lg text-ink hover:bg-surface lg:hidden"
+        className="inline-flex size-10 items-center justify-center rounded-lg text-ink hover:bg-surface min-[1160px]:hidden"
         aria-label="Open menu"
       >
         <Menu className="size-5" aria-hidden="true" />

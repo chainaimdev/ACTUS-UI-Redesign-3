@@ -59,8 +59,14 @@ export const mainNav: NavItem[] = [
   },
   { label: 'Membership', href: '/membership' },
   { label: 'Gallery', href: '/gallery' },
-  { label: 'News', href: '/news' },
-  { label: 'Blog', href: '/blog' },
+  {
+    label: 'Updates',
+    href: '/news',
+    children: [
+      { label: 'News', href: '/news' },
+      { label: 'Blog', href: '/blog' },
+    ],
+  },
   { label: 'Contact', href: '#contact' },
 ]
 

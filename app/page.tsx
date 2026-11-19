@@ -6,10 +6,10 @@ import { Audiences } from '@/components/home/audiences'
 import { TryIt } from '@/components/home/try-it'
 import { ResourcesStrip } from '@/components/home/resources-strip'
 import { ShowcaseHub } from '@/components/home/showcase-hub'
-import { Gallery } from '@/components/home/gallery'
 import { Pulse } from '@/components/home/pulse'
 import { GetInvolved } from '@/components/home/get-involved'
 import { ContactSection } from '@/components/home/contact-section'
+import { SectionNav } from '@/components/home/section-nav'
 
 export default function HomePage() {
   return (
@@ -28,11 +28,11 @@ export default function HomePage() {
         <TryIt />
         <ResourcesStrip />
         <ShowcaseHub />
-        <Gallery />
         <Pulse />
         <GetInvolved />
         <ContactSection />
       </main>
+      <SectionNav />
       <SiteFooter />
     </>
   )

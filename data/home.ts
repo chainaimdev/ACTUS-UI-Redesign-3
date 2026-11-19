@@ -47,18 +47,18 @@ export const hero = {
   primaryCta: { label: 'Explore the Standard', href: '/standards' },
   secondaryCta: { label: 'Try Community Edition', href: '/developers/community-edition' },
   /** One-line caption under the hero illustration. */
-  illustrationCaption: 'From legal terms to cash flows, in one standard language.',
+  illustrationCaption: 'From Financial contracts to cash flows, in one standard language.',
 }
 
 /**
- * Hero picture options for the "View" dropdown above the hero illustration.
- * The first entry is the default. Each has its own one-line caption.
+ * Hero pictures, shown as an auto-playing carousel (arrows + dots) in the hero.
+ * The first entry shows first. Each has its own one-line caption.
  */
 export const heroIllustrations = [
-  { id: 'cashflows', label: 'Contract to cash flows', caption: 'From legal terms to cash flows, in one standard language.' },
+  { id: 'cashflows', label: 'Contract to cash flows', caption: 'From Financial contracts to cash flows, in one standard language.' },
   { id: 'types', label: 'Contract types', caption: 'One taxonomy for every contract, from loans to derivatives.' },
   { id: 'events', label: 'Event timeline', caption: 'Every contract event, on one timeline, computed one way.' },
-  { id: 'scenarios', label: 'Risk scenarios', caption: 'Change the scenario, never the contract.' },
+  { id: 'scenarios', label: 'Risk scenarios', caption: 'Cash flow what-ifs for financial contracts and risk scenarios.' },
   { id: 'ecosystem', label: 'Shared ecosystem', caption: 'Banks, regulators and ledgers, reading one contract.' },
 ] as const
 
