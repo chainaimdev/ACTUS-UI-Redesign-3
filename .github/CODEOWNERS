@@ -1,0 +1,15 @@
+# Code owners for ACTUS-UI-Redesign-3
+#
+# Takes effect once branch protection requires review from code owners.
+# Until then it only pre-fills the reviewer on a pull request.
+
+# Default owner for everything in the repo
+*                       @chainaimdev
+
+# Automation and CI config - owner review required
+/.github/               @chainaimdev
+
+# Build and type configuration
+/next.config.mjs        @chainaimdev
+/tsconfig.json          @chainaimdev
+/package.json           @chainaimdev

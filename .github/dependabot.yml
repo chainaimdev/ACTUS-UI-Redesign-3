@@ -1,0 +1,35 @@
+# Dependabot configuration for ACTUS-UI-Redesign-3
+#
+# Costs no AI credits - plain GitHub infrastructure.
+#
+# Deliberate choices:
+#  - Major version bumps are IGNORED. They are breaking by definition and
+#    need a human to plan them, not an automatic PR. Review majors manually.
+#  - Low PR limit. Each dependency PR triggers a CI run; two open at a time
+#    is reviewable, eight is noise.
+#  - The "github-actions" ecosystem is deliberately NOT configured. gh-aw
+#    generates .github/workflows/*.lock.yml with every action pinned to a
+#    SHA and regenerates it on each `gh aw compile`. Dependabot cannot tell
+#    that generated file from a hand-written one and opens PRs the next
+#    compile silently overwrites. Use `gh aw update` for gh-aw's actions,
+#    and review ci.yml's two actions manually about once a quarter.
+version: 2
+
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Asia/Kolkata"
+    open-pull-requests-limit: 2
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
