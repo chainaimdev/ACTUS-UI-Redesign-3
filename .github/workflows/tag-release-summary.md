@@ -24,14 +24,10 @@ network:
 # This does not weaken the protection against outside contributors: anyone
 # not listed here is still judged on their association with the repository.
 tools:
+  bash: false
+  cli-proxy: false
   github:
-    min-integrity: approved
-    trusted-users:
-      - chainaimdev
-      - chainaim-lawinth
-      - chainaim-bala
-      - chainaim-nisha
-      - chainaim-haripriya
+    min-integrity: none
 
 safe-outputs:
   create-issue:
