@@ -4,7 +4,7 @@ import { involvedCards } from '@/data/home'
 
 export function GetInvolved() {
   return (
-    <section aria-label="Get involved" className="bg-surface py-12 md:py-20">
+    <section id="get-involved" aria-label="Get involved" className="scroll-mt-20 bg-surface py-12 md:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <FadeUp>
           <div className="grid gap-6 md:grid-cols-3">

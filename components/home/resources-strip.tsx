@@ -6,7 +6,7 @@ import { resourceTiles } from '@/data/home'
 
 export function ResourcesStrip() {
   return (
-    <section aria-labelledby="quick-resources-heading" className="border-y border-border py-12 md:py-16">
+    <section id="quick-resources" aria-labelledby="quick-resources-heading" className="scroll-mt-20 border-y border-border py-12 md:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <FadeUp>
           <h2 id="quick-resources-heading" className="mb-6 text-sm font-semibold tracking-widest text-brand uppercase">
