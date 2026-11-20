@@ -5,6 +5,13 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
+ * short: desktop screens with little height (laptops, zoomed browsers), e.g. 1275x589.
+ * Used to tighten vertical spacing so a section fits in one view after a section-dot click.
+ * Taller screens keep the roomier spacing. Font sizes are never changed by it.
+ */
+@custom-variant short (@media (min-width: 64rem) and (max-height: 51.25rem));
+
+/*
  * Unified ACTUS theme system.
  *
  * :root holds the base "White & Blue" (Midnight Sovereign) palette.
@@ -669,5 +676,121 @@
   .fade-up {
     opacity: 1;
     transform: none;
+  }
+}
+
+/*
+ * Home page: room for the left section dots (components/home/section-nav.tsx).
+ * From 1024px to 1399px the page has no side margin, so each section's content box gets
+ * 48px more left padding (32px -> 80px). Section backgrounds still run edge to edge.
+ * From 1400px the centered max-w-7xl box already leaves enough margin, so nothing changes.
+ */
+@media (min-width: 64rem) and (max-width: 87.4375rem) {
+  .home-dots-gutter section > .max-w-7xl {
+    padding-left: 5rem;
+  }
+}
+
+/*
+ * Hero cash-flow chart (components/home/hero-illustration.tsx): each bar grows once from the
+ * timeline baseline when the picture appears, then stays still. Inflow bars grow up, outflow
+ * bars grow down (set by transform-origin on the bar). Off for reduced-motion visitors.
+ */
+@keyframes hero-bar-grow {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+.hero-bar {
+  transform-box: fill-box;
+  animation: hero-bar-grow 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Horizontal bars in the hero pictures: grow once from the left. */
+@keyframes hero-bar-grow-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+.hero-bar-x {
+  transform-box: fill-box;
+  transform-origin: left;
+  animation: hero-bar-grow-x 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Items in the hero pictures (rows, cards, badges): appear once with a soft fade and scale-in. */
+@keyframes hero-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.88);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.hero-pop {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: hero-pop 500ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/*
+ * Hero picture 1 (hero-illustration.tsx): a cursor glides along the chart's timeline and each bar
+ * pops as it passes. Duration (4s) and travel (164px = TIMELINE_END - TIMELINE_START) must match
+ * SWEEP_MS and the timeline in that file; each bar's delay is set there so its pop peaks under the cursor.
+ */
+@keyframes hero-cursor {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  6% {
+    opacity: 1;
+  }
+  94% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(164px);
+    opacity: 0;
+  }
+}
+.hero-cursor {
+  animation: hero-cursor 4s linear infinite;
+}
+@keyframes hero-bar-pulse {
+  0% {
+    transform: scaleY(1);
+  }
+  6% {
+    transform: scaleY(1.12);
+  }
+  14%,
+  100% {
+    transform: scaleY(1);
+  }
+}
+.hero-bar-pulse {
+  transform-box: fill-box;
+  animation: hero-bar-pulse 4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-bar,
+  .hero-bar-x,
+  .hero-pop,
+  .hero-bar-pulse {
+    animation: none;
+  }
+  .hero-cursor {
+    animation: none;
+    opacity: 0;
   }
 }

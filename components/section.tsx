@@ -15,18 +15,20 @@ type SectionProps = {
 export function Section({ id, eyebrow, title, description, children, className, align = 'left' }: SectionProps) {
   const headingId = `${id}-heading`
   return (
-    <section id={id} aria-labelledby={headingId} className={cn('scroll-mt-20 py-12 md:py-20', className)}>
+    <section id={id} aria-labelledby={headingId} className={cn('scroll-mt-20 py-12 md:py-20 short:py-6', className)}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <FadeUp>
-          <div className={cn('mb-10 max-w-2xl md:mb-14', align === 'center' && 'mx-auto text-center')}>
+          <div className={cn('mb-10 max-w-2xl md:mb-14 short:mb-5 short:max-w-5xl', align === 'center' && 'mx-auto text-center')}>
             {eyebrow && (
-              <p className="mb-3 text-sm font-semibold tracking-widest text-brand uppercase">{eyebrow}</p>
+              <p className="mb-3 text-sm font-semibold tracking-widest text-brand uppercase short:mb-2">{eyebrow}</p>
             )}
             <h2 id={headingId} className="text-3xl md:text-4xl lg:text-5xl">
               {title}
             </h2>
-            <div className={cn('divider-gradient mt-5', align === 'center' && 'mx-auto')} aria-hidden="true" />
-            {description && <p className="mt-5 text-lg leading-relaxed text-pretty text-ink-muted">{description}</p>}
+            <div className={cn('divider-gradient mt-5 short:mt-3', align === 'center' && 'mx-auto')} aria-hidden="true" />
+            {description && (
+              <p className="mt-5 text-lg leading-relaxed text-pretty text-ink-muted short:mt-3">{description}</p>
+            )}
           </div>
           {children}
         </FadeUp>

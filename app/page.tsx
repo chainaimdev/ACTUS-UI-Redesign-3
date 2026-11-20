@@ -21,7 +21,8 @@ export default function HomePage() {
         Skip to content
       </a>
       <SiteHeader />
-      <main id="main">
+      {/* home-dots-gutter (globals.css): left room for the section dots on 1024-1399px screens */}
+      <main id="main" className="home-dots-gutter">
         <Hero />
         <WhatIs />
         <Audiences />

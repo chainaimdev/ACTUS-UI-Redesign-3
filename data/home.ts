@@ -43,6 +43,20 @@ export type ResourceTile = {
 export const hero = {
   eyebrow: 'Algorithmic Contract Types™',
   headline: 'Finance speaks one language',
+  /**
+   * Mottos the hero headline rotates through. The first must stay `headline` (the main motto,
+   * also used for screen readers and SEO). Keep each about as long as the first so the hero
+   * keeps its height (two lines on desktop).
+   */
+  rotatingHeadlines: [
+    'Finance speaks one language',
+    'Terms in, cash flows out',
+    'Every contract, one algorithm',
+    'Open standard, shared truth',
+    'One model, clearer risk',
+  ],
+  /** Time each motto stays on screen, in ms. */
+  headlineIntervalMs: 4000,
   subheadline: 'Empowering efficient, transparent and consistent financial ecosystems',
   primaryCta: { label: 'Explore the Standard', href: '/standards' },
   secondaryCta: { label: 'Try Community Edition', href: '/developers/community-edition' },
@@ -60,6 +74,11 @@ export const heroIllustrations = [
   { id: 'events', label: 'Event timeline', caption: 'Every contract event, on one timeline, computed one way.' },
   { id: 'scenarios', label: 'Risk scenarios', caption: 'Cash flow what-ifs for financial contracts and risk scenarios.' },
   { id: 'ecosystem', label: 'Shared ecosystem', caption: 'Banks, regulators and ledgers, reading one contract.' },
+  { id: 'data', label: 'Terms as data', caption: 'Contract terms as data, computed through one open API.' },
+  { id: 'portfolio', label: 'Portfolio view', caption: 'Every contract adds up to one consistent portfolio view.' },
+  { id: 'reporting', label: 'Reporting', caption: 'One calculation feeds risk, finance and regulatory reports.' },
+  { id: 'consistency', label: 'Same results', caption: 'Two systems, one contract, identical cash flows.' },
+  { id: 'tokenized', label: 'Tokenized contracts', caption: 'Digital assets that carry ACTUS logic onto the ledger.' },
 ] as const
 
 export type HeroIllustrationId = (typeof heroIllustrations)[number]['id']

@@ -395,3 +395,413 @@ export function EcosystemIllustration() {
     </svg>
   )
 }
+
+/* ------------------------------------------------------------------ */
+/* Entrance helpers for pictures 6-10 (animations live in globals.css: */
+/* .hero-pop, .hero-bar, .hero-bar-x; all off for reduced motion).      */
+/* ------------------------------------------------------------------ */
+
+const FONT_MONO = 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace'
+
+/** Fades and scales its children in once, after `delay` ms. */
+function Pop({ delay = 0, children }: { delay?: number; children: React.ReactNode }) {
+  return (
+    <g className="hero-pop" style={{ animationDelay: `${delay}ms` }}>
+      {children}
+    </g>
+  )
+}
+
+/** Vertical bar on a baseline that grows once: up for inflows, down for outflows. */
+function GrowBar({
+  x,
+  base,
+  h,
+  w,
+  id,
+  delay = 0,
+  down = false,
+}: {
+  x: number
+  base: number
+  h: number
+  w: number
+  id: string
+  delay?: number
+  down?: boolean
+}) {
+  return (
+    <rect
+      className="hero-bar"
+      style={{ transformOrigin: down ? 'top' : 'bottom', animationDelay: `${delay}ms` }}
+      x={x}
+      y={down ? base : base - h}
+      width={w}
+      height={h}
+      rx="3"
+      fill={down ? 'var(--accent-silver)' : `url(#${id}-grad-v)`}
+      opacity={down ? 0.65 : 1}
+    />
+  )
+}
+
+/** Green-free check badge in brand colours. */
+function Check({ cx, cy, id }: { cx: number; cy: number; id: string }) {
+  return (
+    <g>
+      <circle cx={cx} cy={cy} r="14" fill="var(--grad-to)" opacity="0.12" />
+      <circle cx={cx} cy={cy} r="10" fill={`url(#${id}-grad)`} />
+      <path
+        d={`M${cx - 4.5} ${cy} L${cx - 1} ${cy + 3.5} L${cx + 5} ${cy - 3.5}`}
+        fill="none"
+        stroke="var(--on-brand)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </g>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/* 6. Terms as data: contract terms as JSON, events out of one API      */
+/* ------------------------------------------------------------------ */
+
+export function TermsAsDataIllustration() {
+  const id = 'hx-data'
+  // ACTUS data-dictionary term names (see /standards/data-dictionary); values are an example PAM loan.
+  const terms: [string, string][] = [
+    ['contractType', '"PAM"'],
+    ['notionalPrincipal', '1000000'],
+    ['nominalInterestRate', '0.045'],
+    ['maturityDate', '"2030-01-01"'],
+    ['cycleOfInterestPayment', '"P6M"'],
+  ]
+  const events = [
+    { code: 'IED', w: 70, out: true },
+    { code: 'IP', w: 26 },
+    { code: 'IP', w: 26 },
+    { code: 'PR', w: 48 },
+    { code: 'MD', w: 80 },
+  ]
+  const rowY = (i: number) => 124 + i * 50
+  return (
+    <svg viewBox="0 0 600 460" role="img" aria-labelledby={`${id}-title`} className="mx-auto w-full max-w-xl">
+      <title id={`${id}-title`}>Contract terms written as data go into the ACTUS service, which returns the contract&apos;s event schedule</title>
+      <Defs id={id} />
+      <Grid />
+
+      {/* terms as JSON */}
+      <Card x={36} y={70} w={214} h={300} id={id} />
+      <rect x="56" y="94" width="60" height="9" rx="4.5" fill="var(--grad-from)" />
+      <Chip x={214} y={99} label="JSON" />
+      {terms.map(([k, v], i) => (
+        <Pop key={k} delay={i * 90}>
+          <text x="52" y={146 + i * 42} fontSize="10" fontFamily={FONT_MONO}>
+            <tspan fill="var(--ink-muted)">{`"${k}": `}</tspan>
+            <tspan fill="var(--grad-via)" fontWeight="700">
+              {v}
+            </tspan>
+          </text>
+        </Pop>
+      ))}
+
+      {/* into the ACTUS service */}
+      <Flow id={id} d="M250 224 C 262 224, 270 224, 282 224" width={2} />
+      <Card x={282} y={186} w={96} h={76} id={id} />
+      <text x="330" y="224" textAnchor="middle" fontSize="15" fontWeight="700" fill="var(--ink)" fontFamily={FONT_HEAD}>
+        ACTUS
+      </text>
+      <text x="330" y="243" textAnchor="middle" fontSize="10.5" fill="var(--ink-muted)" fontFamily={FONT_MONO}>
+        /events
+      </text>
+
+      {/* out: the event schedule */}
+      {events.map((_, i) => (
+        <Flow key={`f${i}`} id={id} d={`M378 224 C 400 224, 400 ${rowY(i)}, 420 ${rowY(i)}`} delay={i * 0.25} width={1.75} />
+      ))}
+      {events.map((e, i) => (
+        <Pop key={`r${i}`} delay={350 + i * 120}>
+          <g filter={`url(#${id}-shadow-sm)`}>
+            <rect x="420" y={rowY(i) - 15} width="150" height="30" rx="15" fill="var(--elevated)" stroke="var(--border-color)" />
+          </g>
+          <text x="446" y={rowY(i) + 4} textAnchor="middle" fontSize="11" fontWeight="700" fill="var(--grad-via)" fontFamily={FONT_HEAD}>
+            {e.code}
+          </text>
+          <rect
+            x="474"
+            y={rowY(i) - 4}
+            width={e.w}
+            height="8"
+            rx="4"
+            fill={e.out ? 'var(--accent-silver)' : `url(#${id}-grad)`}
+            opacity={e.out ? 0.7 : 1}
+          />
+        </Pop>
+      ))}
+    </svg>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/* 7. Portfolio view: many contracts, one aggregated cash-flow picture  */
+/* ------------------------------------------------------------------ */
+
+export function PortfolioIllustration() {
+  const id = 'hx-port'
+  const contracts = ['PAM', 'ANN', 'LAM', 'SWAPS', 'STK', 'OPTNS']
+  const hub = { x: 238, y: 232 }
+  const bars = [46, -24, 68, 38, -18, 92]
+  const base = 330
+  return (
+    <svg viewBox="0 0 600 460" role="img" aria-labelledby={`${id}-title`} className="mx-auto w-full max-w-xl">
+      <title id={`${id}-title`}>Six contracts of different types combined into one portfolio and its net cash flow per period</title>
+      <Defs id={id} />
+      <Grid />
+
+      {/* contracts -> portfolio */}
+      {contracts.map((c, i) => {
+        const y = 78 + i * 62
+        const w = c.length * 9 + 34
+        const right = 100 + w / 2
+        return (
+          <g key={c}>
+            <Flow id={id} d={`M${right} ${y} C ${right + 50} ${y}, 200 ${hub.y}, ${hub.x} ${hub.y}`} delay={i * 0.25} width={1.75} />
+            <Pop delay={i * 90}>
+              <g filter={`url(#${id}-shadow-sm)`}>
+                <rect x={100 - w / 2} y={y - 17} width={w} height="34" rx="17" fill="var(--elevated)" stroke="var(--border-color)" />
+              </g>
+              <circle cx={100 - w / 2 + 15} cy={y} r="4" fill={`url(#${id}-grad)`} />
+              <text x={106} y={y + 4.5} textAnchor="middle" fontSize="12" fontWeight="700" fill="var(--ink)" fontFamily={FONT_HEAD}>
+                {c}
+              </text>
+            </Pop>
+          </g>
+        )
+      })}
+
+      {/* portfolio */}
+      <circle cx={hub.x + 56} cy={hub.y} r="76" fill="var(--grad-to)" opacity="0.06" />
+      <Card x={hub.x} y={hub.y - 56} w={112} h={112} id={id} />
+      <text x={hub.x + 56} y={hub.y - 4} textAnchor="middle" fontSize="15" fontWeight="700" fill="var(--ink)" fontFamily={FONT_HEAD}>
+        Portfolio
+      </text>
+      <text x={hub.x + 56} y={hub.y + 16} textAnchor="middle" fontSize="10.5" fill="var(--ink-muted)" fontFamily={FONT_BODY}>
+        6 contracts
+      </text>
+
+      {/* -> net cash flow per period */}
+      <Flow id={id} d={`M${hub.x + 112} ${hub.y} C 365 ${hub.y}, 370 ${hub.y}, 384 ${hub.y}`} width={2} />
+      <Card x={384} y={96} w={186} h={272} id={id} />
+      <text x="402" y="130" fontSize="12" fontWeight="700" fill="var(--ink)" fontFamily={FONT_HEAD}>
+        Net cash flow
+      </text>
+      <text x="402" y="147" fontSize="10" fill="var(--ink-muted)" fontFamily={FONT_BODY}>
+        by period
+      </text>
+      <line x1="400" x2="556" y1={base} y2={base} stroke="var(--accent-silver)" strokeWidth="1.5" />
+      {bars.map((h, i) => (
+        <GrowBar key={i} id={id} x={406 + i * 25} base={base} h={Math.abs(h)} w={15} down={h < 0} delay={300 + i * 100} />
+      ))}
+    </svg>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/* 8. Reporting: one calculation feeds risk, finance and regulation     */
+/* ------------------------------------------------------------------ */
+
+export function ReportingIllustration() {
+  const id = 'hx-rep'
+  const engine = { x: 258, y: 230 }
+  const reports = [
+    { y: 40, title: 'Liquidity', sub: 'Cash-flow gaps by bucket' },
+    { y: 182, title: 'Interest-rate risk', sub: 'Sensitivity to rate shocks' },
+    { y: 324, title: 'Balance sheet', sub: 'Valuation and accruals' },
+  ]
+  return (
+    <svg viewBox="0 0 600 460" role="img" aria-labelledby={`${id}-title`} className="mx-auto w-full max-w-xl">
+      <title id={`${id}-title`}>One ACTUS calculation feeding liquidity, interest-rate risk and balance-sheet reports</title>
+      <Defs id={id} />
+      <Grid />
+
+      {/* contract */}
+      <Card x={40} y={150} w={150} h={160} id={id} />
+      <rect x="60" y="176" width="70" height="9" rx="4.5" fill="var(--grad-from)" />
+      {[200, 222, 244].map((y) => (
+        <rect key={y} x="60" y={y} width={y === 244 ? 64 : 104} height="6" rx="3" fill="var(--accent-silver)" opacity="0.4" />
+      ))}
+      <Chip x={92} y={284} label="ACTUS" />
+      <circle cx="190" cy="230" r="6" fill={`url(#${id}-grad)`} />
+
+      {/* one calculation */}
+      <Flow id={id} d={`M190 230 L${engine.x} ${engine.y}`} width={2} />
+      <Node cx={engine.x} cy={engine.y} r={8} id={id} />
+
+      {/* reports */}
+      {reports.map((r, i) => (
+        <Flow key={`f${r.title}`} id={id} d={`M${engine.x + 8} ${engine.y} C 292 ${engine.y}, 292 ${r.y + 48}, 320 ${r.y + 48}`} delay={i * 0.3} width={2} />
+      ))}
+      {reports.map((r, i) => (
+        <Pop key={r.title} delay={200 + i * 180}>
+          <Card x={320} y={r.y} w={250} h={96} id={id} />
+          <text x="340" y={r.y + 30} fontSize="12.5" fontWeight="700" fill="var(--ink)" fontFamily={FONT_HEAD}>
+            {r.title}
+          </text>
+          <text x="340" y={r.y + 46} fontSize="10" fill="var(--ink-muted)" fontFamily={FONT_BODY}>
+            {r.sub}
+          </text>
+          <Check cx={544} cy={r.y + 48} id={id} />
+        </Pop>
+      ))}
+
+      {/* mini visuals, one per report */}
+      {[10, 16, 8, 20, 14].map((h, i) => (
+        <GrowBar key={`l${i}`} id={id} x={340 + i * 16} base={reports[0].y + 82} h={h} w={10} delay={500 + i * 80} />
+      ))}
+      <Flow
+        id={id}
+        d={`M340 ${reports[1].y + 80} C 380 ${reports[1].y + 80}, 400 ${reports[1].y + 60}, 450 ${reports[1].y + 62}`}
+        width={2}
+      />
+      <rect className="hero-bar-x" style={{ animationDelay: '900ms' }} x="340" y={reports[2].y + 60} width="110" height="8" rx="4" fill={`url(#${id}-grad)`} />
+      <rect
+        className="hero-bar-x"
+        style={{ animationDelay: '1000ms' }}
+        x="340"
+        y={reports[2].y + 74}
+        width="84"
+        height="8"
+        rx="4"
+        fill="var(--accent-silver)"
+        opacity="0.7"
+      />
+    </svg>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/* 9. Same results: two systems, one contract, identical cash flows     */
+/* ------------------------------------------------------------------ */
+
+export function ConsistencyIllustration() {
+  const id = 'hx-same'
+  const systems = [
+    { x: 40, title: 'System A', sub: 'Bank' },
+    { x: 340, title: 'System B', sub: 'Regulator' },
+  ]
+  const bars = [34, 58, 42, 76, 52]
+  const base = 350
+  return (
+    <svg viewBox="0 0 600 460" role="img" aria-labelledby={`${id}-title`} className="mx-auto w-full max-w-xl">
+      <title id={`${id}-title`}>The same ACTUS contract computed by two different systems gives identical cash flows</title>
+      <Defs id={id} />
+      <Grid />
+
+      {/* one contract */}
+      <Card x={236} y={30} w={128} h={84} id={id} />
+      <rect x="254" y="52" width="56" height="8" rx="4" fill="var(--grad-from)" />
+      <rect x="254" y="68" width="90" height="6" rx="3" fill="var(--accent-silver)" opacity="0.4" />
+      <Chip x={278} y={95} label="PAM" />
+
+      {/* to both systems */}
+      <Flow id={id} d="M300 114 C 300 150, 150 150, 150 186" width={2} />
+      <Flow id={id} d="M300 114 C 300 150, 450 150, 450 186" delay={0.3} width={2} />
+
+      {systems.map((s) => (
+        <g key={s.title}>
+          <Card x={s.x} y={186} w={220} h={196} id={id} />
+          <text x={s.x + 20} y="216" fontSize="12.5" fontWeight="700" fill="var(--ink)" fontFamily={FONT_HEAD}>
+            {s.title}
+          </text>
+          <text x={s.x + 20} y="232" fontSize="10" fill="var(--ink-muted)" fontFamily={FONT_BODY}>
+            {s.sub}
+          </text>
+          <line x1={s.x + 20} x2={s.x + 200} y1={base} y2={base} stroke="var(--accent-silver)" strokeWidth="1.5" />
+          {bars.map((h, i) => (
+            <GrowBar key={i} id={id} x={s.x + 30 + i * 36} base={base} h={h} w={20} delay={300 + i * 100} />
+          ))}
+        </g>
+      ))}
+
+      {/* identical */}
+      <Pop delay={900}>
+        <circle cx="300" cy="284" r="30" fill="var(--grad-to)" opacity="0.12" />
+        <circle cx="300" cy="284" r="20" fill="var(--grad-from)" />
+        <text x="300" y="291" textAnchor="middle" fontSize="20" fontWeight="700" fill="var(--on-brand)" fontFamily={FONT_HEAD}>
+          =
+        </text>
+      </Pop>
+      <Pop delay={1050}>
+        <Chip x={300} y={420} label="Identical cash flows" />
+      </Pop>
+    </svg>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/* 10. Tokenized contracts: ACTUS logic carried onto a ledger           */
+/* ------------------------------------------------------------------ */
+
+export function TokenizedIllustration() {
+  const id = 'hx-token'
+  const coin = { x: 300, y: 230 }
+  const blocks = [
+    { x: 366, n: '#1201', ev: 'IP' },
+    { x: 436, n: '#1202', ev: 'PR' },
+    { x: 506, n: '#1203', ev: 'MD' },
+  ]
+  return (
+    <svg viewBox="0 0 600 460" role="img" aria-labelledby={`${id}-title`} className="mx-auto w-full max-w-xl">
+      <title id={`${id}-title`}>An ACTUS contract issued as a token whose interest, principal and maturity events settle in ledger blocks</title>
+      <Defs id={id} />
+      <Grid />
+
+      {/* contract */}
+      <Card x={40} y={140} w={150} h={180} id={id} />
+      <rect x="60" y="166" width="70" height="9" rx="4.5" fill="var(--grad-from)" />
+      {[190, 212, 234, 256].map((y) => (
+        <rect key={y} x="60" y={y} width={y === 256 ? 60 : 104} height="6" rx="3" fill="var(--accent-silver)" opacity="0.4" />
+      ))}
+      <Chip x={92} y={294} label="ACTUS" />
+      <circle cx="190" cy="230" r="6" fill={`url(#${id}-grad)`} />
+
+      {/* contract -> token */}
+      <Flow id={id} d={`M190 230 C 230 230, 240 230, ${coin.x - 40} ${coin.y}`} width={2} />
+      <Pop delay={150}>
+        <circle cx={coin.x} cy={coin.y} r="56" fill="var(--grad-to)" opacity="0.08" />
+        <circle cx={coin.x} cy={coin.y} r="40" fill={`url(#${id}-grad-v)`} />
+        <circle cx={coin.x} cy={coin.y} r="30" fill="none" stroke="var(--on-brand)" strokeWidth="1.5" opacity="0.5" />
+        <text x={coin.x} y={coin.y + 5} textAnchor="middle" fontSize="15" fontWeight="700" fill="var(--on-brand)" fontFamily={FONT_HEAD}>
+          TKN
+        </text>
+      </Pop>
+      <Pop delay={300}>
+        <Chip x={coin.x} y={154} label="Smart contract" />
+      </Pop>
+
+      {/* token -> ledger */}
+      <Flow id={id} d={`M${coin.x + 40} ${coin.y} C 352 ${coin.y}, 356 ${coin.y}, 366 ${coin.y}`} width={2} />
+      <text x="464" y="184" textAnchor="middle" fontSize="11" fontWeight="700" fill="var(--ink-muted)" fontFamily={FONT_HEAD}>
+        Ledger
+      </text>
+      {blocks.slice(1).map((b) => (
+        <line key={`l${b.x}`} x1={b.x - 14} x2={b.x} y1={coin.y} y2={coin.y} stroke={`url(#${id}-grad)`} strokeWidth="2.5" />
+      ))}
+      {blocks.map((b, i) => (
+        <Pop key={b.n} delay={450 + i * 150}>
+          <g filter={`url(#${id}-shadow-sm)`}>
+            <rect x={b.x} y={coin.y - 28} width="56" height="56" rx="10" fill="var(--elevated)" stroke="var(--border-color)" />
+          </g>
+          <rect x={b.x} y={coin.y - 28} width="56" height="4" rx="2" fill={`url(#${id}-grad)`} />
+          <rect x={b.x + 12} y={coin.y - 10} width="32" height="5" rx="2.5" fill="var(--accent-silver)" opacity="0.5" />
+          <rect x={b.x + 12} y={coin.y + 2} width="22" height="5" rx="2.5" fill="var(--accent-silver)" opacity="0.35" />
+          <text x={b.x + 28} y={coin.y + 50} textAnchor="middle" fontSize="10" fill="var(--ink-muted)" fontFamily={FONT_MONO}>
+            {b.n}
+          </text>
+          <Chip x={b.x + 28} y={coin.y + 90} label={b.ev} />
+        </Pop>
+      ))}
+    </svg>
+  )
+}
