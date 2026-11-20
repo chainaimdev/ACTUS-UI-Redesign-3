@@ -37,8 +37,12 @@ export function ContactSection() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="card-brand grid gap-5 p-7 md:p-9 lg:col-span-3" noValidate={false}>
-          <div className="grid gap-5 sm:grid-cols-2">
+        <form
+          onSubmit={handleSubmit}
+          className="card-brand grid gap-5 p-7 md:p-9 lg:col-span-3 short:gap-3 short:p-6"
+          noValidate={false}
+        >
+          <div className="grid gap-5 sm:grid-cols-2 short:gap-3">
             <div className="grid gap-2">
               <Label htmlFor="contact-name">Name</Label>
               <Input id="contact-name" name="name" autoComplete="name" required className="h-11 bg-elevated" />
@@ -50,7 +54,13 @@ export function ContactSection() {
           </div>
           <div className="grid gap-2">
             <Label htmlFor="contact-message">Message</Label>
-            <Textarea id="contact-message" name="message" required rows={5} className="min-h-32 bg-elevated" />
+            <Textarea
+              id="contact-message"
+              name="message"
+              required
+              rows={5}
+              className="min-h-32 bg-elevated short:h-24 short:min-h-24"
+            />
           </div>
           <Label className="flex cursor-pointer items-start gap-3 font-normal text-ink-muted">
             <Checkbox name="newsletter" className="mt-0.5" />

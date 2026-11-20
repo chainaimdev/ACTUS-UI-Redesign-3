@@ -3,10 +3,15 @@
 import { useCallback, useEffect, useState } from 'react'
 import { HeroIllustration } from '@/components/home/hero-illustration'
 import {
+  ConsistencyIllustration,
   ContractTypesIllustration,
   EcosystemIllustration,
   EventTimelineIllustration,
+  PortfolioIllustration,
+  ReportingIllustration,
   ScenarioIllustration,
+  TermsAsDataIllustration,
+  TokenizedIllustration,
 } from '@/components/home/hero-illustrations-extra'
 import { heroIllustrations, type HeroIllustrationId } from '@/data/home'
 import { cn } from '@/lib/utils'
@@ -17,6 +22,11 @@ const ILLUSTRATIONS: Record<HeroIllustrationId, () => React.JSX.Element> = {
   events: EventTimelineIllustration,
   scenarios: ScenarioIllustration,
   ecosystem: EcosystemIllustration,
+  data: TermsAsDataIllustration,
+  portfolio: PortfolioIllustration,
+  reporting: ReportingIllustration,
+  consistency: ConsistencyIllustration,
+  tokenized: TokenizedIllustration,
 }
 
 type HeroVisualProps = {
@@ -72,7 +82,9 @@ export function HeroVisual({ autoplay = true, intervalMs = 5000 }: HeroVisualPro
     <figure
       aria-roledescription="carousel"
       aria-label="ACTUS illustrations"
-      className="animate-in fade-in zoom-in-95 duration-1000 motion-reduce:animate-none"
+      // lg: stretch to the row height with the dots at the bottom, so they always share a line
+      // with the motto dots in the text column, whichever column is taller.
+      className="animate-in fade-in zoom-in-95 duration-1000 motion-reduce:animate-none lg:flex lg:flex-col lg:self-stretch"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onFocus={() => setFocused(true)}
@@ -86,9 +98,13 @@ export function HeroVisual({ autoplay = true, intervalMs = 5000 }: HeroVisualPro
         role="group"
         aria-roledescription="slide"
         aria-label={`${index + 1} of ${total}: ${current.label}`}
-        className="animate-in fade-in duration-500 motion-reduce:animate-none"
+        className="animate-in fade-in duration-500 motion-reduce:animate-none lg:flex lg:flex-1 lg:flex-col lg:justify-center lg:pb-4"
       >
-        <div>
+        {/* Desktop: the picture may be at most as tall as what is left of the screen after the
+            header, hero padding, caption and dots (13rem), so the whole hero fits in one view.
+            All pictures are 600x460 (ratio 1.3), so capping the width caps the height; the
+            picture's own max-w-xl still applies, so it never grows past its normal size. */}
+        <div className="mx-auto w-full lg:max-w-[calc((100svh-13rem)*1.3)]">
           <Illustration />
         </div>
         <figcaption
@@ -101,7 +117,7 @@ export function HeroVisual({ autoplay = true, intervalMs = 5000 }: HeroVisualPro
         </figcaption>
       </div>
 
-      <div className="mt-4 flex items-center justify-center gap-2" role="group" aria-label="Choose illustration">
+      <div className="mt-4 flex items-center justify-center gap-2 lg:mt-auto" role="group" aria-label="Choose illustration">
         {heroIllustrations.map((h, i) => (
           <button
             key={h.id}

@@ -16,13 +16,31 @@ const nodes = [
   { cx: 560, cy: 350, r: 5 },
 ]
 
+/**
+ * Cash-flow bar chart (bottom right) with a timeline cursor.
+ * A dot travels along the timeline from TIMELINE_START to TIMELINE_END every SWEEP_MS; as it passes
+ * a bar, that bar pops (scales ~12% from the baseline and settles). Bars never move sideways.
+ * Animations: .hero-cursor and .hero-bar-pulse in globals.css (their 4s / 164px must match below).
+ * The tallest bar's pop stays below the far-right flow node at (560, 350).
+ */
+const CHART_BASELINE = 424
+const BAR_WIDTH = 16
+const TIMELINE_Y = 452
+const TIMELINE_START = 426
+const TIMELINE_END = 590 // TIMELINE_START + 164 (cursor travel in globals.css)
+const SWEEP_MS = 4000 // must equal the .hero-cursor / .hero-bar-pulse duration
+const PULSE_PEAK = 0.06 // the pulse keyframe peaks at 6% of SWEEP_MS
 const cashBars = [
-  { x: 470, h: 34, up: true },
-  { x: 492, h: 20, up: false },
-  { x: 514, h: 46, up: true },
-  { x: 536, h: 16, up: false },
-  { x: 558, h: 58, up: true },
+  { x: 430, h: 30, up: true },
+  { x: 456, h: 20, up: false },
+  { x: 482, h: 44, up: true },
+  { x: 508, h: 16, up: false },
+  { x: 534, h: 52, up: true },
+  { x: 560, h: 58, up: true },
 ]
+/** Delay so a bar's pop peaks exactly when the cursor is over its centre. */
+const pulseDelay = (x: number) =>
+  Math.round((SWEEP_MS * (x + BAR_WIDTH / 2 - TIMELINE_START)) / (TIMELINE_END - TIMELINE_START) - SWEEP_MS * PULSE_PEAK)
 
 export function HeroIllustration() {
   return (
@@ -83,21 +101,46 @@ export function HeroIllustration() {
       ))}
       <path d="M400 80 L400 175 M400 290 L400 380" stroke="var(--accent-silver)" strokeWidth="1.5" strokeDasharray="3 5" />
 
-      {/* cash-flow bars */}
-      <g transform="translate(0 0)">
-        <line x1="460" x2="580" y1="430" y2="430" stroke="var(--accent-silver)" strokeWidth="1.5" />
+      {/* cash-flow bars with a timeline cursor */}
+      <g>
+        {/* bar baseline */}
+        <line x1={TIMELINE_START} x2={TIMELINE_END} y1={CHART_BASELINE} y2={CHART_BASELINE} stroke="var(--accent-silver)" strokeWidth="1.5" />
+
+        {/* bars: fixed in place; each pops from the baseline when the cursor passes it */}
         {cashBars.map((b) => (
           <rect
             key={b.x}
+            className="hero-bar-pulse"
+            style={{ transformOrigin: b.up ? 'bottom' : 'top', animationDelay: `${pulseDelay(b.x)}ms` }}
             x={b.x}
-            y={b.up ? 430 - b.h : 430}
-            width="14"
+            y={b.up ? CHART_BASELINE - b.h : CHART_BASELINE}
+            width={BAR_WIDTH}
             height={b.h}
             rx="3"
             fill={b.up ? 'url(#hero-grad-v)' : 'var(--accent-silver)'}
             opacity={b.up ? 1 : 0.6}
           />
         ))}
+
+        {/* timeline with a tick under each bar */}
+        <line x1={TIMELINE_START} x2={TIMELINE_END} y1={TIMELINE_Y} y2={TIMELINE_Y} stroke="var(--accent-silver)" strokeWidth="1.5" opacity="0.8" />
+        {cashBars.map((b) => (
+          <line
+            key={`t${b.x}`}
+            x1={b.x + BAR_WIDTH / 2}
+            x2={b.x + BAR_WIDTH / 2}
+            y1={TIMELINE_Y - 3}
+            y2={TIMELINE_Y + 3}
+            stroke="var(--accent-silver)"
+            strokeWidth="1.5"
+          />
+        ))}
+
+        {/* cursor: glides left to right along the timeline, then starts again */}
+        <g className="hero-cursor">
+          <circle cx={TIMELINE_START} cy={TIMELINE_Y} r="7" fill="var(--grad-to)" opacity="0.18" />
+          <circle cx={TIMELINE_START} cy={TIMELINE_Y} r="4" fill="url(#hero-grad)" />
+        </g>
       </g>
 
       {/* contract document */}

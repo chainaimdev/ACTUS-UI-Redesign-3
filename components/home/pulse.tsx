@@ -28,7 +28,7 @@ export function Pulse() {
         </p>
       )}
 
-      <div className="mt-10 flex justify-center">
+      <div className="mt-10 flex justify-center short:mt-5">
         <Link
           href={pulseSection.readMore.href}
           className="group inline-flex items-center gap-2 rounded-full border border-border px-6 py-3 text-sm font-semibold text-ink transition-colors hover:border-brand hover:text-brand"

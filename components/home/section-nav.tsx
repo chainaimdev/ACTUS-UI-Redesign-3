@@ -17,7 +17,9 @@ export const homeSections: SectionNavItem[] = [
   { id: 'why-important', label: 'Why ACTUS' },
   { id: 'try-actus', label: 'Try ACTUS' },
   { id: 'quick-resources', label: 'Quick resources' },
-  { id: 'showcase', label: 'Showcase' },
+  // The Showcase box opens with Announcements; Winners is its own stop inside the same box.
+  { id: 'showcase', label: 'Announcements' },
+  { id: 'winners', label: 'Winners' },
   { id: 'pulse', label: 'Pulse' },
   { id: 'get-involved', label: 'Get involved' },
   { id: 'contact', label: 'Contact' },
@@ -26,15 +28,30 @@ export const homeSections: SectionNavItem[] = [
 type SectionNavProps = {
   /** Sections the dots jump to. Default: homeSections. */
   sections?: SectionNavItem[]
-  /** Show the side dots (desktop, lg and up). Default: true. */
+  /** Show the side dots on the left edge (desktop, lg and up). Default: true. */
   showDots?: boolean
   /** Show the floating "Back to top" button. Default: true. */
   showBackToTop?: boolean
   /** Scroll distance in px before "Back to top" appears. Default: 600. */
   backToTopOffset?: number
-  /** A section counts as current once its top passes this fraction of the viewport height. Default: 0.4. */
+  /** A section counts as current once its top passes this fraction of the viewport height. Default: 0.5 (screen middle). */
   activeThreshold?: number
+  /**
+   * Where a section lands after a dot click. 'center': middle of the visible area below the sticky
+   * header (a section taller than that area lands with its top under the header instead).
+   * 'start': top under the header. Default: 'center'.
+   */
+  align?: 'center' | 'start'
+  /** Space in px kept between the sticky header and a section that lands at the top. Default: 12. */
+  headerGap?: number
+  /** Element whose left edge the dot column lines up with (the page's text column). Default: '#hero-heading'. */
+  alignTo?: string
+  /** Gap in px between the dot column and that text edge. Default: 28. */
+  gapToContent?: number
 }
+
+/** Width of one dot button (size-6). */
+const DOT_SIZE = 24
 
 /**
  * Floating page navigation: side dots that jump to each section, and a "Back to top" button.
@@ -45,9 +62,27 @@ export function SectionNav({
   showDots = true,
   showBackToTop = true,
   backToTopOffset = 600,
-  activeThreshold = 0.4,
+  activeThreshold = 0.5,
+  align = 'center',
+  headerGap = 12,
+  alignTo = '#hero-heading',
+  gapToContent = 28,
 }: SectionNavProps) {
   const [available, setAvailable] = useState<SectionNavItem[]>([])
+  // Left position of the dot column, measured from the text column so the gap is the same on every screen.
+  const [dotsLeft, setDotsLeft] = useState<number | null>(null)
+
+  useEffect(() => {
+    const place = () => {
+      const target = document.querySelector(alignTo)
+      if (!target) return setDotsLeft(null)
+      const textLeft = target.getBoundingClientRect().left
+      setDotsLeft(Math.max(4, Math.round(textLeft - gapToContent - DOT_SIZE)))
+    }
+    place()
+    window.addEventListener('resize', place)
+    return () => window.removeEventListener('resize', place)
+  }, [alignTo, gapToContent])
   const [activeId, setActiveId] = useState('top')
   const [showTop, setShowTop] = useState(false)
 
@@ -85,23 +120,42 @@ export function SectionNav({
     }
   }, [available, activeThreshold, backToTopOffset])
 
-  const goTo = useCallback((id: string) => {
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const behavior: ScrollBehavior = reduce ? 'auto' : 'smooth'
-    if (id === 'top') {
-      window.scrollTo({ top: 0, behavior })
-      return
-    }
-    // Sections carry scroll-mt-20, so they land below the sticky header.
-    document.getElementById(id)?.scrollIntoView({ behavior, block: 'start' })
-  }, [])
+  const goTo = useCallback(
+    (id: string) => {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      const behavior: ScrollBehavior = reduce ? 'auto' : 'smooth'
+      if (id === 'top') {
+        window.scrollTo({ top: 0, behavior })
+        return
+      }
+      const el = document.getElementById(id)
+      if (!el) return
+
+      // Visible area = viewport minus the sticky header (measured, so theme or size changes are covered).
+      const headerHeight = document.querySelector('header')?.getBoundingClientRect().height ?? 0
+      const visible = window.innerHeight - headerHeight
+      const rect = el.getBoundingClientRect()
+      const sectionTop = window.scrollY + rect.top
+
+      let target = sectionTop - headerHeight - headerGap
+      if (align === 'center' && rect.height < visible) {
+        // Equal space above and below the section inside the visible area.
+        target = sectionTop - headerHeight - (visible - rect.height) / 2
+      }
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight
+      window.scrollTo({ top: Math.max(0, Math.min(target, maxScroll)), behavior })
+    },
+    [align, headerGap],
+  )
 
   return (
     <>
       {showDots && available.length > 1 && (
+        // Own column left of the text: always gapToContent (28px) before the text edge.
         <nav
           aria-label="Page sections"
-          className="fixed top-1/2 right-4 z-40 hidden -translate-y-1/2 flex-col items-end gap-3 lg:flex"
+          className="fixed top-1/2 left-1.5 z-40 hidden -translate-y-1/2 flex-col items-start gap-3 lg:flex"
+          style={dotsLeft !== null ? { left: dotsLeft } : undefined}
         >
           {available.map((s) => {
             const active = s.id === activeId
@@ -114,10 +168,10 @@ export function SectionNav({
                 aria-current={active ? 'true' : undefined}
                 className="group relative flex size-6 items-center justify-center rounded-full"
               >
+                {/* Section name pill, shown to the right of the dot on hover or keyboard focus. */}
                 <span
-                  className={cn(
-                    'pointer-events-none absolute right-8 rounded-md border border-border bg-elevated px-2.5 py-1 text-xs font-medium whitespace-nowrap text-ink opacity-0 shadow-md transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100',
-                  )}
+                  aria-hidden="true"
+                  className="pointer-events-none absolute left-8 rounded-md border border-border bg-elevated px-2.5 py-1 text-xs font-medium whitespace-nowrap text-ink opacity-0 shadow-md transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
                 >
                   {s.label}
                 </span>
